@@ -50,12 +50,7 @@ class ScheduleState extends State<ScheduleWidget> {
 
 	@override
 	Widget build(BuildContext context) {
-    List<Widget> widgets = [
-        ButtonTime2Widget(
-          text: "teste",
-          update: update,
-        ),
-    ];
+    List<Widget> widgets = [ ];
 
     if (schedule.start != null) {
       widgets.add(
@@ -76,8 +71,20 @@ class ScheduleState extends State<ScheduleWidget> {
       widgets.add(Text(schedule.delta!.format(context)));
     }
 
-		return Row(
-			children: widgets,
-		);
+		return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SizedBox(height: 8,),
+        ButtonTime2Widget(
+          text: "Punch",
+          update: update,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          spacing: 10.0,
+          children: widgets,
+        ),
+      ],
+    );
 	}
 }
