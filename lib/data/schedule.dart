@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class Schedule {
-  Schedule();
+class ScheduleData {
+  ScheduleData();
 
   TimeOfDay? _start;
   TimeOfDay? get start => _start;
@@ -11,6 +11,7 @@ class Schedule {
       delta = _calcDeltaTime();
     }
   }
+
   TimeOfDay? _end;
   TimeOfDay? get end => _end;
   set end(TimeOfDay time) {
@@ -19,6 +20,7 @@ class Schedule {
       delta = _calcDeltaTime();
     }
   }
+
   TimeOfDay? delta;
 
   void addTime() {
@@ -26,7 +28,7 @@ class Schedule {
     if (_start == null) {
       start = now;
     } else if (_end == null) {
-       end = now;
+      end = now;
     }
   }
 
