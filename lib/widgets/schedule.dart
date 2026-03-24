@@ -1,29 +1,27 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
+
 import 'package:meuponto/data/schedule.dart';
 import 'package:meuponto/widgets/button_time2.dart';
 
 class ScheduleWidget extends StatefulWidget {
-	const ScheduleWidget({super.key});
+  const ScheduleWidget({super.key});
 
-	@override
-	State<ScheduleWidget> createState() => ScheduleState();
+  @override
+  State<ScheduleWidget> createState() => ScheduleState();
 }
 
 class ScheduleState extends State<ScheduleWidget> {
-	final Schedule schedule = Schedule();
+  final ScheduleData schedule = ScheduleData();
 
-  Future<TimeOfDay?>  _newTime() async {
+  Future<TimeOfDay?> _newTime() {
     return showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
       initialEntryMode: TimePickerEntryMode.inputOnly,
     );
-
   }
 
-  void update() {
+  void updateSchedule() {
     setState(() {
       schedule.addTime();
     });
@@ -48,43 +46,46 @@ class ScheduleState extends State<ScheduleWidget> {
     }
   }
 
-	@override
-	Widget build(BuildContext context) {
-    List<Widget> widgets = [ ];
+  List<Widget> getPunches() {
+    List<Widget> widgets = [];
 
     if (schedule.start != null) {
       widgets.add(
         ButtonTime2Widget(
           text: schedule.start!.format(context),
           update: updateStart,
-        ));
+        ),
+      );
     }
     if (schedule.end != null) {
       widgets.add(
         ButtonTime2Widget(
           text: schedule.end!.format(context),
           update: updateEnd,
-        ));
+        ),
+      );
     }
 
     if (schedule.delta != null) {
-      widgets.add(Text(schedule.delta!.format(context)));
+      widgets.add(ButtonTime2Widget(text: schedule.delta!.format(context)));
     }
 
-		return Column(
+    return widgets;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        SizedBox(height: 8,),
-        ButtonTime2Widget(
-          text: "Punch",
-          update: update,
-        ),
+        SizedBox(height: 8),
+        ButtonTime2Widget(text: "Punch", update: updateSchedule),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           spacing: 10.0,
-          children: widgets,
+          children: getPunches(),
         ),
       ],
     );
-	}
+  }
 }
