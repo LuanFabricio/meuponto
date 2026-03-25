@@ -1,16 +1,26 @@
 import 'package:flutter/material.dart';
 
+const Color baseBgColor = Color(0x00FFFFFF);
+
 class ButtonTime2Widget extends StatelessWidget {
-  const ButtonTime2Widget({super.key, required this.text, this.update});
+  const ButtonTime2Widget({
+    super.key,
+    required this.text,
+    this.update,
+    this.bgColor = baseBgColor
+  });
 
   final Function()? update;
   final String text;
+  final Color bgColor;
 
   @override
   Widget build(BuildContext context) {
-    final WidgetStatePropertyAll<Color>? backgroundColor = update == null
-        ? WidgetStatePropertyAll<Color>(Colors.grey.withValues(alpha: 0.25))
-        : null;
+    WidgetStatePropertyAll<Color>? backgroundColor = WidgetStatePropertyAll(bgColor);
+    if (update == null) {
+      backgroundColor =  WidgetStatePropertyAll(Colors.grey.withValues(alpha: 0.25));
+    }
+
     return TextButton(
       onPressed: update,
       style: ButtonStyle(
