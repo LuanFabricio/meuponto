@@ -5,12 +5,14 @@ class ScheduleData {
 
   ScheduleData.fromTime(TimeOfDay this._start, TimeOfDay this._end) {
     delta = _calcDeltaTime();
+    isComplete = true;
   }
 
   ScheduleData.fromSchedule(ScheduleData schedule) {
     _start = schedule.start;
     _end = schedule.end;
     delta = schedule.delta;
+    isComplete = schedule.isComplete;
   }
 
   TimeOfDay? _start;
@@ -32,6 +34,7 @@ class ScheduleData {
   }
 
   TimeOfDay? delta;
+  bool isComplete = false;
 
   void addTime() {
     final TimeOfDay now = TimeOfDay.now();
