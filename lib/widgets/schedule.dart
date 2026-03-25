@@ -27,16 +27,31 @@ class ScheduleState extends State<ScheduleWidget> {
 
   final List<ScheduleData> turns = [];
 
-  Future<TimeOfDay?> _newTime() {
+  ScheduleState() : super() {
+    for (ScheduleData shift in baseShift){
+      final ScheduleData schedule = ScheduleData.fromSchedule(shift);
+      schedule.isComplete = false;
+      turns.add(schedule);
+    }
+
+    for (ScheduleData shift in baseShift){
+      print("Shifts: ${shift.start}/${shift.end} (${shift.delta}) - ${shift.isComplete}");
+    }
+
+    for (ScheduleData turn in turns){
+      print("Shifts: ${turn.start}/${turn.end} (${turn.delta}) - ${turn.isComplete}");
+    }
+  }
+
+  Future<TimeOfDay?> _newTime({TimeOfDay? initialTime}) {
     return showTimePicker(
       context: context,
-      initialTime: TimeOfDay.now(),
+      initialTime: initialTime ?? TimeOfDay.now(),
       initialEntryMode: TimePickerEntryMode.inputOnly,
     );
   }
 
   void updateSchedule() {
-
     setState(() {
       int lastIndex = turns.length - 1;
       if (turns.isEmpty || turns[lastIndex].isShiftFilled()) {
@@ -56,7 +71,7 @@ class ScheduleState extends State<ScheduleWidget> {
         ButtonTime2Widget(
           text: turns[i].start!.format(context),
           update: () async {
-            final TimeOfDay? newTime = await _newTime();
+            final TimeOfDay? newTime = await _newTime(initialTime: turns[i].start);
             if (newTime != null) {
               setState(() => turns[i].start = newTime);
             }
@@ -69,7 +84,7 @@ class ScheduleState extends State<ScheduleWidget> {
         ButtonTime2Widget(
           text: turns[i].end!.format(context),
           update: () async {
-            final TimeOfDay? newTime = await _newTime();
+            final TimeOfDay? newTime = await _newTime(initialTime: turns[i].end);
             if (newTime != null) {
               setState(() => turns[i].end = newTime);
             }
@@ -101,6 +116,29 @@ class ScheduleState extends State<ScheduleWidget> {
     return widgets;
   }
 
+  String getTotalDelta() {
+    double totalDelta = 0;
+    for (ScheduleData schedule in turns) {
+      if (schedule.delta == null) continue;
+      totalDelta += schedule.delta!.hour + schedule.delta!.minute / 60.0;
+    }
+
+    String totalTime = "";
+    final int hour = totalDelta.floor();
+    if (hour > 0) {
+      totalTime += hour.toString().padLeft(2, '0');
+    } else {
+      totalTime += "00";
+    }
+
+    final int minutes = ((totalDelta - hour) * 60).ceil();
+    totalTime += ":${minutes.toString().padLeft(2, '0')}";
+    print("Turns: ${turns.length}");
+    print("totalDelta: $totalDelta");
+
+    return totalTime;
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -110,6 +148,7 @@ class ScheduleState extends State<ScheduleWidget> {
         SizedBox(height: 8),
         ButtonTime2Widget(text: "Punch", update: updateSchedule),
         ...getTurns(),
+        ButtonTime2Widget(text: getTotalDelta()),
       ],
     );
   }
