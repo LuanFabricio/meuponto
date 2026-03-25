@@ -7,7 +7,7 @@ class ScheduleData {
   TimeOfDay? get start => _start;
   set start(TimeOfDay time) {
     _start = time;
-    if (_isShouldCalcDelta()) {
+    if (isShiftFilled()) {
       delta = _calcDeltaTime();
     }
   }
@@ -16,7 +16,7 @@ class ScheduleData {
   TimeOfDay? get end => _end;
   set end(TimeOfDay time) {
     _end = time;
-    if (_isShouldCalcDelta()) {
+    if (isShiftFilled()) {
       delta = _calcDeltaTime();
     }
   }
@@ -32,7 +32,7 @@ class ScheduleData {
     }
   }
 
-  bool _isShouldCalcDelta() {
+  bool isShiftFilled() {
     return start != null && end != null;
   }
 
