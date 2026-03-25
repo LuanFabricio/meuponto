@@ -8,8 +8,8 @@ class ButtonTime2Widget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final WidgetStatePropertyAll<Color>? backgroundColor = update != null
-        ? WidgetStatePropertyAll<Color>(Colors.grey)
+    final WidgetStatePropertyAll<Color>? backgroundColor = update == null
+        ? WidgetStatePropertyAll<Color>(Colors.grey.withValues(alpha: 0.25))
         : null;
     return TextButton(
       onPressed: update,
