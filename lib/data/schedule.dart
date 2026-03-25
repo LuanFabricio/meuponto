@@ -3,6 +3,16 @@ import 'package:flutter/material.dart';
 class ScheduleData {
   ScheduleData();
 
+  ScheduleData.fromTime(TimeOfDay this._start, TimeOfDay this._end) {
+    delta = _calcDeltaTime();
+  }
+
+  ScheduleData.fromSchedule(ScheduleData schedule) {
+    _start = schedule.start;
+    _end = schedule.end;
+    delta = schedule.delta;
+  }
+
   TimeOfDay? _start;
   TimeOfDay? get start => _start;
   set start(TimeOfDay time) {
