@@ -11,7 +11,21 @@ class ScheduleWidget extends StatefulWidget {
 }
 
 class ScheduleState extends State<ScheduleWidget> {
-  final ScheduleData schedule = ScheduleData();
+  // TODO: Use this list as default values,
+  // and makes the punch button just update
+  // the current shift
+  final List<ScheduleData> baseShift = [
+    ScheduleData.fromTime(
+      TimeOfDay(hour: 8, minute: 0),
+      TimeOfDay(hour: 13, minute: 0)
+    ),
+    ScheduleData.fromTime(
+      TimeOfDay(hour: 14, minute: 20),
+      TimeOfDay(hour: 18, minute: 8)
+    )
+  ];
+
+  final List<ScheduleData> turns = [];
 
   Future<TimeOfDay?> _newTime() {
     return showTimePicker(
@@ -22,52 +36,66 @@ class ScheduleState extends State<ScheduleWidget> {
   }
 
   void updateSchedule() {
+
     setState(() {
-      schedule.addTime();
+      int lastIndex = turns.length - 1;
+      if (turns.isEmpty || turns[lastIndex].isShiftFilled()) {
+        turns.add(ScheduleData());
+        lastIndex++;
+      }
+
+      turns[lastIndex].addTime();
     });
   }
 
-  void updateStart() async {
-    final TimeOfDay? newTime = await _newTime();
-    if (newTime != null) {
-      setState(() {
-        schedule.start = newTime;
-      });
-    }
-  }
-
-  void updateEnd() async {
-    final TimeOfDay? newTime = await _newTime();
-
-    if (newTime != null) {
-      setState(() {
-        schedule.start = newTime;
-      });
-    }
-  }
-
-  List<Widget> getPunches() {
+  List<Widget> getPunches(int i) {
     List<Widget> widgets = [];
 
-    if (schedule.start != null) {
+    if (turns[i].start != null) {
       widgets.add(
         ButtonTime2Widget(
-          text: schedule.start!.format(context),
-          update: updateStart,
+          text: turns[i].start!.format(context),
+          update: () async {
+            final TimeOfDay? newTime = await _newTime();
+            if (newTime != null) {
+              setState(() => turns[i].start = newTime);
+            }
+          },
         ),
       );
     }
-    if (schedule.end != null) {
+    if (turns[i].end != null) {
       widgets.add(
         ButtonTime2Widget(
-          text: schedule.end!.format(context),
-          update: updateEnd,
+          text: turns[i].end!.format(context),
+          update: () async {
+            final TimeOfDay? newTime = await _newTime();
+            if (newTime != null) {
+              setState(() => turns[i].end = newTime);
+            }
+          },
         ),
       );
     }
 
-    if (schedule.delta != null) {
-      widgets.add(ButtonTime2Widget(text: schedule.delta!.format(context)));
+    if (turns[i].delta != null) {
+      widgets.add(ButtonTime2Widget(text: turns[i].delta!.format(context)));
+    }
+
+    return widgets;
+  }
+
+  List<Widget> getTurns() {
+    List<Widget> widgets = [];
+
+    for (var i = 0; i < turns.length; i++) {
+      widgets.add(
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          spacing: 10.0,
+          children: getPunches(i),
+        )
+      );
     }
 
     return widgets;
@@ -75,16 +103,13 @@ class ScheduleState extends State<ScheduleWidget> {
 
   @override
   Widget build(BuildContext context) {
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         SizedBox(height: 8),
         ButtonTime2Widget(text: "Punch", update: updateSchedule),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          spacing: 10.0,
-          children: getPunches(),
-        ),
+        ...getTurns(),
       ],
     );
   }
