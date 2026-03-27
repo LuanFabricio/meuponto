@@ -1,13 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:meuponto/data/schedule.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 const String tag = "Database";
 
 TimeOfDay dbStringToTimeOfDay(String format) {
-  List<String> properties = format.split(":");
+  print("format: $format");
+  List<String> properties = format.split(" ")[1].split(":");
 
   return TimeOfDay(
     hour: int.parse(properties[0]),
