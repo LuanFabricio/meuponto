@@ -3,6 +3,7 @@ import 'dart:developer' as dev;
 import 'package:flutter/material.dart';
 
 import 'package:meuponto/data/schedule.dart';
+import 'package:meuponto/services/database.dart';
 import 'package:meuponto/widgets/button_time2.dart';
 
 const String tag = "ScheduleWidget";
@@ -16,15 +17,6 @@ class ScheduleWidget extends StatefulWidget {
 
 class ScheduleState extends State<ScheduleWidget> {
   final List<ScheduleData> turns = [];
-
-  Future<TimeOfDay?> _newTime({TimeOfDay? initialTime}) {
-    return showTimePicker(
-      context: context,
-      initialTime: initialTime ?? TimeOfDay.now(),
-      initialEntryMode: TimePickerEntryMode.inputOnly,
-    );
-  }
-
 
   ScheduleState() : super() {
     for (ScheduleData shift in baseShift){
@@ -42,9 +34,6 @@ class ScheduleState extends State<ScheduleWidget> {
     }
   }
 
-  // TODO: Use this list as default values,
-  // and makes the punch button just update
-  // the current shift
   final List<ScheduleData> baseShift = [
     ScheduleData.fromTime(
       TimeOfDay(hour: 8, minute: 0),
@@ -134,6 +123,20 @@ class ScheduleState extends State<ScheduleWidget> {
     return ScheduleData.minutesToString(totalDeltaMinutes);
   }
 
+  void save() async {
+    for (final schedule in turns) {
+      final _ = await insertSchedule(schedule);
+    }
+
+    final now = DateTime.now();
+    final queryDate = DateTime(now.year, now.month, now.day);
+    List<ScheduleData> list = await listScheduleByDate(queryDate);
+
+    for (final item in list) {
+      print("[${queryDate.toString()}]${item.start} -> ${item.end} (${item.deltaMinutes})");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -144,7 +147,20 @@ class ScheduleState extends State<ScheduleWidget> {
         ButtonTime2Widget(text: "Punch", update: updateSchedule),
         ...getTurns(),
         ButtonTime2Widget(text: getTotalDelta()),
+        ButtonTime2Widget(
+          text: "Save",
+          update: save,
+          bgColor: Colors.lightGreen,
+        )
       ],
+    );
+  }
+
+  Future<TimeOfDay?> _newTime({TimeOfDay? initialTime}) {
+    return showTimePicker(
+      context: context,
+      initialTime: initialTime ?? TimeOfDay.now(),
+      initialEntryMode: TimePickerEntryMode.inputOnly,
     );
   }
 }
