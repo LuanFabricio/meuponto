@@ -49,10 +49,12 @@ Future<Database> initializeDB() async {
   final _ = WidgetsFlutterBinding.ensureInitialized();
 
   return openDatabase(
-    join(await getDatabasesPath(), "my_shift.db"),
+    join(await getDatabasesPath(), "schedule.db"),
     onCreate: (db, version) {
       return db.execute(
-        "CREATE TABLE shifts(shift_date datetime, start time, end time, delta_minutes int);");
+        "CREATE TABLE schedules(schedule_date datetime, start time, end time, delta_minutes int)");
+      // return db.execute(
+      //   "CREATE TABLE shifts(shift_date datetime, start time, end time, delta_minutes int);");
     },
     version: 1,
   );
@@ -82,4 +84,40 @@ Future<List<Shift>> listShifts() async {
         end: dbStringToTimeOfDay(["end"] as String),
       ),
   ];
+}
+
+Future<int> insertSchedule(ScheduleData schedule) async {
+  final db = await initializeDB();
+
+  print("Schedule map: ${schedule.toMap()}");
+  return db.insert(
+    "schedules",
+    schedule.toMap(),
+    conflictAlgorithm: ConflictAlgorithm.replace,
+  );
+}
+
+Future<List<ScheduleData>> listScheduleByDate(DateTime date) async {
+  final db = await initializeDB();
+
+  List<ScheduleData> schedules = [];
+
+  final list = await db.query(
+    "schedules",
+    where: "schedule_date = ?",
+    whereArgs: [date.toString()]
+  );
+
+  for (final obj in list) {
+    print(obj.toString());
+    ScheduleData schedule = ScheduleData();
+
+    schedule.start = dbStringToTimeOfDay(obj["start"] as String);
+    schedule.end = dbStringToTimeOfDay(obj["end"] as String);
+    schedule.deltaMinutes = obj["delta_minutes"] as int;
+
+    schedules.add(schedule);
+  }
+
+  return schedules;
 }
