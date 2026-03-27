@@ -1,7 +1,11 @@
+import 'dart:developer' as dev;
+
 import 'package:flutter/material.dart';
 
 import 'package:meuponto/data/schedule.dart';
 import 'package:meuponto/widgets/button_time2.dart';
+
+const String tag = "ScheduleWidget";
 
 class ScheduleWidget extends StatefulWidget {
   const ScheduleWidget({super.key});
@@ -11,6 +15,33 @@ class ScheduleWidget extends StatefulWidget {
 }
 
 class ScheduleState extends State<ScheduleWidget> {
+  final List<ScheduleData> turns = [];
+
+  Future<TimeOfDay?> _newTime({TimeOfDay? initialTime}) {
+    return showTimePicker(
+      context: context,
+      initialTime: initialTime ?? TimeOfDay.now(),
+      initialEntryMode: TimePickerEntryMode.inputOnly,
+    );
+  }
+
+
+  ScheduleState() : super() {
+    for (ScheduleData shift in baseShift){
+      final ScheduleData schedule = ScheduleData.fromSchedule(shift);
+      schedule.isComplete = false;
+      turns.add(schedule);
+    }
+
+    for (ScheduleData shift in baseShift){
+      dev.log(name: tag, "Shifts: ${shift.start}/${shift.end} (${shift.deltaMinutes}) - ${shift.isComplete}");
+    }
+
+    for (ScheduleData turn in turns){
+      dev.log(name: tag, "Shifts: ${turn.start}/${turn.end} (${turn.deltaMinutes}) - ${turn.isComplete}");
+    }
+  }
+
   // TODO: Use this list as default values,
   // and makes the punch button just update
   // the current shift
@@ -24,32 +55,6 @@ class ScheduleState extends State<ScheduleWidget> {
       TimeOfDay(hour: 18, minute: 8)
     )
   ];
-
-  final List<ScheduleData> turns = [];
-
-  ScheduleState() : super() {
-    for (ScheduleData shift in baseShift){
-      final ScheduleData schedule = ScheduleData.fromSchedule(shift);
-      schedule.isComplete = false;
-      turns.add(schedule);
-    }
-
-    for (ScheduleData shift in baseShift){
-      print("Shifts: ${shift.start}/${shift.end} (${shift.delta}) - ${shift.isComplete}");
-    }
-
-    for (ScheduleData turn in turns){
-      print("Shifts: ${turn.start}/${turn.end} (${turn.delta}) - ${turn.isComplete}");
-    }
-  }
-
-  Future<TimeOfDay?> _newTime({TimeOfDay? initialTime}) {
-    return showTimePicker(
-      context: context,
-      initialTime: initialTime ?? TimeOfDay.now(),
-      initialEntryMode: TimePickerEntryMode.inputOnly,
-    );
-  }
 
   void updateSchedule() {
     setState(() {
@@ -93,8 +98,8 @@ class ScheduleState extends State<ScheduleWidget> {
       );
     }
 
-    if (turns[i].delta != null) {
-      widgets.add(ButtonTime2Widget(text: turns[i].delta!.format(context)));
+    if (turns[i].deltaMinutes != null) {
+      widgets.add(ButtonTime2Widget(text: ScheduleData.minutesToString(turns[i].deltaMinutes!)));
     }
 
     return widgets;
@@ -117,26 +122,16 @@ class ScheduleState extends State<ScheduleWidget> {
   }
 
   String getTotalDelta() {
-    double totalDelta = 0;
+    int totalDeltaMinutes = 0;
     for (ScheduleData schedule in turns) {
-      if (schedule.delta == null) continue;
-      totalDelta += schedule.delta!.hour + schedule.delta!.minute / 60.0;
+      if (schedule.deltaMinutes == null) continue;
+      totalDeltaMinutes += schedule.deltaMinutes!;
     }
 
-    String totalTime = "";
-    final int hour = totalDelta.floor();
-    if (hour > 0) {
-      totalTime += hour.toString().padLeft(2, '0');
-    } else {
-      totalTime += "00";
-    }
+    dev.log(name: tag, "Turns: ${turns.length}");
+    dev.log(name: tag, "totalDelta: $totalDeltaMinutes");
 
-    final int minutes = ((totalDelta - hour) * 60).ceil();
-    totalTime += ":${minutes.toString().padLeft(2, '0')}";
-    print("Turns: ${turns.length}");
-    print("totalDelta: $totalDelta");
-
-    return totalTime;
+    return ScheduleData.minutesToString(totalDeltaMinutes);
   }
 
   @override
