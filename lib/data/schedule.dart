@@ -1,40 +1,40 @@
 import 'package:flutter/material.dart';
 
 class ScheduleData {
-  ScheduleData();
-
-  ScheduleData.fromTime(TimeOfDay this._start, TimeOfDay this._end) {
-    delta = _calcDeltaTime();
-    isComplete = true;
-  }
-
-  ScheduleData.fromSchedule(ScheduleData schedule) {
-    _start = schedule.start;
-    _end = schedule.end;
-    delta = schedule.delta;
-    isComplete = schedule.isComplete;
-  }
-
   TimeOfDay? _start;
   TimeOfDay? get start => _start;
-  set start(TimeOfDay time) {
-    _start = time;
-    if (isShiftFilled()) {
-      delta = _calcDeltaTime();
-    }
-  }
 
   TimeOfDay? _end;
   TimeOfDay? get end => _end;
   set end(TimeOfDay time) {
     _end = time;
     if (isShiftFilled()) {
-      delta = _calcDeltaTime();
+      deltaMinutes = _calcDeltaTime();
     }
   }
 
-  TimeOfDay? delta;
+  int? deltaMinutes;
   bool isComplete = false;
+
+  ScheduleData();
+
+  ScheduleData.fromTime(TimeOfDay this._start, TimeOfDay this._end) {
+    deltaMinutes = _calcDeltaTime();
+    isComplete = true;
+  }
+
+  ScheduleData.fromSchedule(ScheduleData schedule) {
+    _start = schedule.start;
+    _end = schedule.end;
+    deltaMinutes = schedule.deltaMinutes;
+    isComplete = schedule.isComplete;
+  }
+  set start(TimeOfDay time) {
+    _start = time;
+    if (isShiftFilled()) {
+      deltaMinutes = _calcDeltaTime();
+    }
+  }
 
   void addTime() {
     final TimeOfDay now = TimeOfDay.now();
@@ -49,16 +49,24 @@ class ScheduleData {
     return start != null && end != null;
   }
 
-  TimeOfDay _calcDeltaTime() {
-    final double startHour = start!.hour + _start!.minute / 60.0;
-    final double endHour = end!.hour + end!.minute / 60.0;
+  int _calcDeltaTime() {
+    final int startHour = start!.hour * 60 + _start!.minute;
+    final int endHour = end!.hour * 60 + end!.minute;
 
     assert(endHour >= startHour);
-    final double delta = endHour - startHour;
+    return endHour - startHour;
+  }
 
-    final int hour = delta.floor();
-    final int minute = ((delta - hour) * 60).toInt();
+  static String minutesToString(int deltaMinutes) {
+    String format = "";
 
-    return TimeOfDay(hour: hour, minute: minute);
+    int hour = (deltaMinutes / 60).floor();
+    int minutes = deltaMinutes % 60;
+
+    format += hour.toString().padLeft(2, '0');
+    format += ':';
+    format += minutes.toString().padLeft(2, '0');
+
+    return format;
   }
 }
