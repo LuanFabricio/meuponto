@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ScheduleData {
+  // TODO: Move start, end and deltaMinutes to
+  // required properties
   TimeOfDay? _start;
   TimeOfDay? get start => _start;
 
@@ -47,6 +49,17 @@ class ScheduleData {
 
   bool isShiftFilled() {
     return start != null && end != null;
+  }
+
+  Map<String, Object?> toMap() {
+    DateTime now = DateTime.now();
+
+    return {
+      "schedule_date": DateTime(now.year, now.month, now.day).toString(),
+      "start": DateTime(now.year, now.month, now.day, start!.hour, start!.minute).toString(),
+      "end": DateTime(now.year, now.month, now.day, end!.hour, end!.minute).toString(),
+      "delta_minutes": deltaMinutes.toString(),
+    };
   }
 
   int _calcDeltaTime() {
