@@ -69,17 +69,4 @@ class ScheduleData {
     assert(endHour >= startHour);
     return endHour - startHour;
   }
-
-  static String minutesToString(int deltaMinutes) {
-    String format = "";
-
-    int hour = (deltaMinutes / 60).floor();
-    int minutes = deltaMinutes % 60;
-
-    format += hour.toString().padLeft(2, '0');
-    format += ':';
-    format += minutes.toString().padLeft(2, '0');
-
-    return format;
-  }
 }

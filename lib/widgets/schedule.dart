@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:meuponto/data/schedule.dart';
 import 'package:meuponto/services/database.dart';
+import 'package:meuponto/services/format.dart';
 import 'package:meuponto/widgets/button_time2.dart';
 
 const String tag = "ScheduleWidget";
@@ -88,7 +89,7 @@ class ScheduleState extends State<ScheduleWidget> {
     }
 
     if (turns[i].deltaMinutes != null) {
-      widgets.add(ButtonTime2Widget(text: ScheduleData.minutesToString(turns[i].deltaMinutes!)));
+      widgets.add(ButtonTime2Widget(text: minutesHourFormat(turns[i].deltaMinutes!)));
     }
 
     return widgets;
@@ -120,7 +121,7 @@ class ScheduleState extends State<ScheduleWidget> {
     dev.log(name: tag, "Turns: ${turns.length}");
     dev.log(name: tag, "totalDelta: $totalDeltaMinutes");
 
-    return ScheduleData.minutesToString(totalDeltaMinutes);
+    return minutesHourFormat(totalDeltaMinutes);
   }
 
   void save() async {
