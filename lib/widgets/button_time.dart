@@ -1,40 +1,40 @@
 import 'package:flutter/material.dart';
 
-class ButtonTimeWidget extends StatefulWidget {
-  const ButtonTimeWidget({super.key});
+const Color baseBgColor = Color(0x00FFFFFF);
+Color deactivateBgColor = Colors.grey.withValues(alpha: 0.25);
+
+class ButtonTimeWidget extends StatelessWidget {
+  const ButtonTimeWidget({
+    super.key,
+    required this.text,
+    this.update,
+    this.bgColor = baseBgColor
+  });
+
+  final Function()? update;
+  final String text;
+  final Color bgColor;
 
   @override
-  State<ButtonTimeWidget> createState() => ButtonTimeState();
-}
-
-class ButtonTimeState extends State<ButtonTimeWidget> {
-  TimeOfDay? _time;
-
-  void _updateTime() async {
-    final TimeOfDay? newTime = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-      initialEntryMode: TimePickerEntryMode.inputOnly,
-    );
-
-    if (newTime != null) {
-      setState(() {
-        _time = newTime;
-      });
-    }
-  }
-
-   @override
-   Widget build(BuildContext context) {
-    String buttonText = "-";
-    String? format = _time?.format(context);
-    if (format != null) {
-      buttonText = format;
+  Widget build(BuildContext context) {
+    WidgetStatePropertyAll<Color>? backgroundColor = WidgetStatePropertyAll(bgColor);
+    // TODO: Map the uses and remove
+    if (update == null) {
+      backgroundColor =  WidgetStatePropertyAll(Colors.grey.withValues(alpha: 0.25));
     }
 
     return TextButton(
-      onPressed: _updateTime,
-      child: Text(buttonText),
+      onPressed: update,
+      style: ButtonStyle(
+        shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18.0),
+            side: BorderSide(color: Colors.black),
+          ),
+        ),
+        backgroundColor: backgroundColor,
+      ),
+      child: Text(text),
     );
-   }
+  }
 }

@@ -3,7 +3,7 @@ import 'package:meuponto/data/schedule.dart';
 import 'package:meuponto/services/database.dart';
 import 'package:meuponto/services/format.dart';
 import 'package:meuponto/services/time_picker.dart';
-import 'package:meuponto/widgets/button_time2.dart';
+import 'package:meuponto/widgets/button_time.dart';
 
 class ScheduleLazyWidget extends StatefulWidget {
   const ScheduleLazyWidget({super.key});
@@ -22,7 +22,7 @@ class ScheduleLazyState extends State<ScheduleLazyWidget> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ButtonTime2Widget(
+              ButtonTimeWidget(
                 text: schedule.start!.format(context),
                 // TODO: Check how to handle the update state
                 update: () async {
@@ -32,7 +32,7 @@ class ScheduleLazyState extends State<ScheduleLazyWidget> {
                   }
                 },
               ),
-              ButtonTime2Widget(
+              ButtonTimeWidget(
                 text: schedule.end!.format(context),
                 update: () async {
                   final newTime = await timePicker(context, initialTime: schedule.end);
@@ -41,7 +41,7 @@ class ScheduleLazyState extends State<ScheduleLazyWidget> {
                   }
                 },
               ),
-              ButtonTime2Widget(
+              ButtonTimeWidget(
                 text: minutesHourFormat(schedule.deltaMinutes!),
               )
             ]

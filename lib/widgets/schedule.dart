@@ -6,7 +6,7 @@ import 'package:meuponto/data/schedule.dart';
 import 'package:meuponto/services/database.dart';
 import 'package:meuponto/services/time_picker.dart';
 import 'package:meuponto/services/format.dart';
-import 'package:meuponto/widgets/button_time2.dart';
+import 'package:meuponto/widgets/button_time.dart';
 
 const String tag = "ScheduleWidget";
 
@@ -64,7 +64,7 @@ class ScheduleState extends State<ScheduleWidget> {
 
     if (turns[i].start != null) {
       widgets.add(
-        ButtonTime2Widget(
+        ButtonTimeWidget(
           text: turns[i].start!.format(context),
           update: () async {
             final newTime = await timePicker(context, initialTime: turns[i].start);
@@ -77,7 +77,7 @@ class ScheduleState extends State<ScheduleWidget> {
     }
     if (turns[i].end != null) {
       widgets.add(
-        ButtonTime2Widget(
+        ButtonTimeWidget(
           text: turns[i].end!.format(context),
           update: () async {
             final newTime = await timePicker(context, initialTime: turns[i].end);
@@ -90,7 +90,7 @@ class ScheduleState extends State<ScheduleWidget> {
     }
 
     if (turns[i].deltaMinutes != null) {
-      widgets.add(ButtonTime2Widget(text: minutesHourFormat(turns[i].deltaMinutes!)));
+      widgets.add(ButtonTimeWidget(text: minutesHourFormat(turns[i].deltaMinutes!)));
     }
 
     return widgets;
@@ -146,10 +146,10 @@ class ScheduleState extends State<ScheduleWidget> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         SizedBox(height: 8),
-        ButtonTime2Widget(text: "Punch", update: updateSchedule),
+        ButtonTimeWidget(text: "Punch", update: updateSchedule),
         ...getTurns(),
-        ButtonTime2Widget(text: getTotalDelta()),
-        ButtonTime2Widget(
+        ButtonTimeWidget(text: getTotalDelta()),
+        ButtonTimeWidget(
           text: "Save",
           update: save,
           bgColor: Colors.lightGreen,
