@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 const Color baseBgColor = Color(0x00FFFFFF);
+Color deactivateBgColor = Colors.grey.withValues(alpha: 0.25);
 
 class ButtonTime2Widget extends StatelessWidget {
   const ButtonTime2Widget({
@@ -17,6 +18,7 @@ class ButtonTime2Widget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     WidgetStatePropertyAll<Color>? backgroundColor = WidgetStatePropertyAll(bgColor);
+    // TODO: Map the uses and remove
     if (update == null) {
       backgroundColor =  WidgetStatePropertyAll(Colors.grey.withValues(alpha: 0.25));
     }
