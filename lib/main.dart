@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:meuponto/widgets/button_time.dart';
 
 import 'package:meuponto/widgets/schedule.dart';
-import 'package:meuponto/widgets/time_picker.dart';
+import 'package:meuponto/widgets/schedule_lazy.dart';
 
 void main() {
   runApp(const MyApp());
@@ -113,9 +113,9 @@ class _MyHomePageState extends State<MyHomePage> {
             //   '$_counter',
             //   style: Theme.of(context).textTheme.headlineMedium,
             // ),
-            TimePickerWidget(),
             ButtonTimeWidget(),
             ScheduleWidget(),
+            ScheduleLazyWidget(),
           ],
         ),
       ),
