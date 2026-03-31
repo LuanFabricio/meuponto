@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:meuponto/data/schedule.dart';
 import 'package:meuponto/services/database.dart';
+import 'package:meuponto/services/time_picker.dart';
 import 'package:meuponto/services/format.dart';
 import 'package:meuponto/widgets/button_time2.dart';
 
@@ -66,11 +67,11 @@ class ScheduleState extends State<ScheduleWidget> {
         ButtonTime2Widget(
           text: turns[i].start!.format(context),
           update: () async {
-            final TimeOfDay? newTime = await _newTime(initialTime: turns[i].start);
+            final newTime = await timePicker(context, initialTime: turns[i].start);
             if (newTime != null) {
               setState(() => turns[i].start = newTime);
             }
-          },
+          }
         ),
       );
     }
@@ -79,11 +80,11 @@ class ScheduleState extends State<ScheduleWidget> {
         ButtonTime2Widget(
           text: turns[i].end!.format(context),
           update: () async {
-            final TimeOfDay? newTime = await _newTime(initialTime: turns[i].end);
+            final newTime = await timePicker(context, initialTime: turns[i].end);
             if (newTime != null) {
               setState(() => turns[i].end = newTime);
             }
-          },
+          }
         ),
       );
     }
@@ -154,14 +155,6 @@ class ScheduleState extends State<ScheduleWidget> {
           bgColor: Colors.lightGreen,
         )
       ],
-    );
-  }
-
-  Future<TimeOfDay?> _newTime({TimeOfDay? initialTime}) {
-    return showTimePicker(
-      context: context,
-      initialTime: initialTime ?? TimeOfDay.now(),
-      initialEntryMode: TimePickerEntryMode.inputOnly,
     );
   }
 }
