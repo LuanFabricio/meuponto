@@ -5,40 +5,78 @@ import 'package:meuponto/services/format.dart';
 import 'package:meuponto/services/time_picker.dart';
 import 'package:meuponto/widgets/button_time.dart';
 
-class ShiftPopupWidget extends StatefulWidget {
-  const ShiftPopupWidget({super.key});
+List<Widget> shiftsToWidgets(
+  List<ScheduleData> shifts,
+  BuildContext context,
+  void Function(void Function()) setState
+) {
+  List<Widget> shiftsWidgets = [];
+  for (var i = 0; i < shifts.length; i++) {
+    shiftsWidgets.add(Row(
+      children: [
+        ButtonTimeWidget(
+          text: shifts[i].start!.format(context),
+          update: () async {
+            final newTime = await timePicker(
+              context, initialTime: shifts[i].start
+            );
+            if (newTime != null) {
+              shifts[i].start = newTime;
+              setState(() => shifts[i].start = newTime);
+            }
+          }
+        ),
+        ButtonTimeWidget(
+          text: shifts[i].end!.format(context),
+          update: () async {
+            final newTime = await timePicker(
+              context, initialTime: shifts[i].end
+            );
+            if (newTime != null) {
+              setState(() => shifts[i].end = newTime);
+            }
+          }
+        ),
+        ButtonTimeWidget(
+          text: minutesHourFormat(shifts[i].deltaMinutes!))
+      ])
+    );
+  }
 
-  @override
-  State<ShiftPopupWidget> createState() => ShiftPopupState();
+  return shiftsWidgets;
 }
 
-class ShiftPopupState extends State<ShiftPopupWidget> {
-  @override
-    Widget build(BuildContext context) {
-      // TODO: implement build
-      throw UnimplementedError();
-    }
-}
-
-Future<void> _showPopup(BuildContext context, Widget child) async {
+Future<void> _showPopup(BuildContext context, List<ScheduleData> shifts) async {
   return showDialog(
     context: context,
     barrierDismissible: false,
     builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text("Set your default shift."),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: Text("Ok"),
-          )
-        ],
-        content: SingleChildScrollView(child: child),
-      );
-    },
-  );
+      return StatefulBuilder(
+        builder: (context, setState) {
+          List<Widget> shiftsWidgets = shiftsToWidgets(shifts, context, setState);
+          return AlertDialog(
+            title: const Text("Set your default shift."),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  for (var i = 0; i < shifts.length; i++) {
+                    final shift = shifts[i];
+                    print("$i: ${shift.start!.format(context)} "
+                      "- ${shift.end!.format(context)} "
+                      "(${minutesHourFormat(shift.deltaMinutes!)})}");
+                  }
+                  Navigator.of(context).pop();
+                },
+                child: Text("Ok"),
+              )
+            ],
+            content: SingleChildScrollView(
+              child: Column(children: shiftsWidgets)
+            ),
+          );
+      }
+    );
+  });
 }
 
 class PopupWidget extends StatefulWidget {
@@ -59,8 +97,7 @@ class PopupState extends State<PopupWidget> {
   void showPopup() async {
     print("Abrindo popup...");
 
-
-    await _showPopup(context, getPopupWidget());
+    await _showPopup(context, shifts);
   }
 
   Widget getPopupWidget() {
