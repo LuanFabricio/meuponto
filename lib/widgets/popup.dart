@@ -50,52 +50,64 @@ List<Widget> shiftsToWidgets(
   return shiftsWidgets;
 }
 
-Future<void> _showPopup(BuildContext context, List<Shift> shifts) async {
+Future<void> _showPopup(BuildContext context) async {
+  // List<Shift> shifts = await listShifts();
   return showDialog(
     context: context,
     barrierDismissible: false,
     builder: (BuildContext context) {
-      return StatefulBuilder(
-        builder: (context, setState) {
-          List<Widget> shiftsWidgets = shiftsToWidgets(shifts, context, setState);
-          return AlertDialog(
-            title: const Text("Set your default shift."),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text("Ok"),
-              )
-            ],
-            content: SingleChildScrollView(
-              child: Column(
-                children: [
-                  ...shiftsWidgets,
+      return FutureBuilder(future: listShifts(),
+        builder: (BuildContext context, AsyncSnapshot<List<Shift>> snapshot) {
+        if (snapshot.hasError) {
+          return Text("Error: ${snapshot.error}");
+        } else if (snapshot.hasData) {
+          List<Shift> shifts = snapshot.data!;
+          return StatefulBuilder(
+            builder: (context, setState) {
+              List<Widget> shiftsWidgets = shiftsToWidgets(shifts, context, setState);
+              return AlertDialog(
+                title: const Text("Set your default shift."),
+                actions: [
                   TextButton(
-                    onPressed: () async {
-                      setState(() =>
-                        shifts.add(
-                          Shift(
-                            defaultTimeOfDay,
-                            defaultTimeOfDay,
-                            turn: shifts.length
-                          )));
+                    onPressed: () {
+                      Navigator.of(context).pop();
                     },
-                    child: Text("Add")
-                  ),
-                  TextButton(
-                    onPressed: () async {
-                      for (final shift in shifts) {
-                        insertShift(shift);
-                      }
-                    },
-                    child: Text("Save")
-                  ),
+                    child: Text("Ok"),
+                  )
                 ],
-              )
-            ),
+                content: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      ...shiftsWidgets,
+                      TextButton(
+                        onPressed: () async {
+                          setState(() =>
+                            shifts.add(
+                              Shift(
+                                defaultTimeOfDay,
+                                defaultTimeOfDay,
+                                turn: shifts.length + 1,
+                              )));
+                        },
+                        child: Text("Add")
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          for (final shift in shifts) {
+                            print(shift.toString());
+                            insertShift(shift);
+                          }
+                        },
+                        child: Text("Save")
+                      ),
+                    ],
+                  )
+                ),
+              );
+            }
           );
+        }
+        return Text("Loading...");
       }
     );
   });
@@ -109,65 +121,11 @@ class PopupWidget extends StatefulWidget {
 }
 
 class PopupState extends State<PopupWidget> {
-  List<Shift> shifts = [
-    Shift(
-      TimeOfDay(hour: 8, minute: 0,),
-      TimeOfDay(hour: 13, minute: 0),
-      turn: 1,
-    )
-  ];
-
   void showPopup() async {
-    print("Abrindo popup...");
-
-    await _showPopup(context, shifts);
+    await _showPopup(context);
   }
 
-  Widget getPopupWidget() {
-    List<List<Widget>> shiftsWidgets = [];
-    for (var i = 0; i < shifts.length; i++) {
-      shiftsWidgets.add([
-        ButtonTimeWidget(
-          text: shifts[i].start.format(context),
-          update: () async {
-            final newTime = await timePicker(
-              context,
-              initialTime: shifts[i].start
-            );
-            if (newTime != null) {
-              shifts[i].start = newTime;
-              setState(() => shifts[i].start = newTime);
-            }
-          }
-        ),
-        ButtonTimeWidget(
-          text: shifts[i].end.format(context),
-          update: () async {
-            final newTime = await timePicker(
-              context,
-              initialTime: shifts[i].end
-            );
-            if (newTime != null) {
-              setState(() => shifts[i].end = newTime);
-            }
-          }
-        ),
-        ButtonTimeWidget(
-          text: minutesHourFormat(shifts[i].deltaMinutes))
-      ]);
-    }
-
-    return ListBody(
-      children: shiftsWidgets.map(
-        (turn) => Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          spacing: 5,
-          children: turn
-        )
-      ).toList(growable: false)
-    );
-  }
-@override
+  @override
   Widget build(BuildContext context) {
     return TextButton.icon(onPressed: showPopup, label: const Text("Edit shifts"));
   }
