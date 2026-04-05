@@ -96,10 +96,12 @@ Future<List<Shift>> listShifts() async {
   final shifts = <Shift>[];
   for (var i = 0; i < list.length; i++) {
       final shift = list[i];
-      Shift(
-        dbStringToTimeOfDay(shift["start"] as String),
-        dbStringToTimeOfDay(shift["end"] as String),
-        turn: i+1,
+      shifts.add(
+        Shift(
+          dbStringToTimeOfDay(shift["start"] as String),
+          dbStringToTimeOfDay(shift["end"] as String),
+          turn: i+1,
+        )
       );
   }
 
