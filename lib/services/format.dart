@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 String minutesHourFormat(int totalMinutes) {
   String format = "";
 
@@ -9,4 +11,10 @@ String minutesHourFormat(int totalMinutes) {
   format += minutes.toString().padLeft(2, '0');
 
   return format;
+}
+
+String formatTimeOfDay(final TimeOfDay time) {
+  final hour = time.hour.toString().padLeft(2, "0");
+  final minute = time.minute.toString().padLeft(2, "0");
+  return "$hour:$minute:00";
 }
