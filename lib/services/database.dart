@@ -1,11 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:meuponto/services/format.dart';
-import 'package:meuponto/services/time_utils.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
+import 'package:meuponto/data/shift.dart';
 import 'package:meuponto/data/schedule.dart';
 
 const String tag = "Database";
@@ -20,53 +19,11 @@ TimeOfDay dbStringToTimeOfDay(String format) {
   );
 }
 
-class Shift {
-  Shift(TimeOfDay start, TimeOfDay end, {required this.turn}) {
-    _start = start;
-    _end = end;
-    deltaMinutes = getDeltaTime(start, end);
-    print("Delta minutes: $deltaMinutes");
-  }
-
-  final int turn;
-  TimeOfDay _start = TimeOfDay.now();
-  TimeOfDay get start => _start;
-  set start(TimeOfDay time) {
-    _start = time;
-    deltaMinutes = getDeltaTime(start, start);
-  }
-
-  TimeOfDay get end => _end;
-  TimeOfDay _end = TimeOfDay.now();
-  set end(TimeOfDay time) {
-    _end = time;
-    deltaMinutes = getDeltaTime(start, end);
-  }
-  int deltaMinutes = 0;
-
-  Map<String, Object?> toMap() {
-    return {
-      "turn": turn,
-      "start": formatTimeOfDay(start),
-      "end": formatTimeOfDay(end),
-      "delta_minutes": deltaMinutes,
-    };
-  }
-
-  @override
-  String toString() {
-    return
-      "start: ${start.toString()} "
-      "end: ${end.toString()} "
-      "delta_minutes: $deltaMinutes "
-    ;
-  }
-}
-
 
 Future<Database> initializeDB() async {
   final _ = WidgetsFlutterBinding.ensureInitialized();
 
+  // await deleteDatabase(join(await getDatabasesPath(), "meu_ponto.db"));
   return openDatabase(
     join(await getDatabasesPath(), "meu_ponto.db"),
     onCreate: (db, version) {

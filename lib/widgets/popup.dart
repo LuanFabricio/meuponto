@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:meuponto/data/shift.dart';
 import 'package:meuponto/services/database.dart';
 import 'package:meuponto/services/format.dart';
 import 'package:meuponto/services/time_picker.dart';
