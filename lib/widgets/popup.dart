@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:meuponto/data/schedule.dart';
+
 import 'package:meuponto/services/database.dart';
 import 'package:meuponto/services/format.dart';
 import 'package:meuponto/services/time_picker.dart';
 import 'package:meuponto/widgets/button_time.dart';
 
+const TimeOfDay defaultTimeOfDay = TimeOfDay(hour: 0, minute: 0);
+
 List<Widget> shiftsToWidgets(
-  List<ScheduleData> shifts,
+  List<Shift> shifts,
   BuildContext context,
   void Function(void Function()) setState
 ) {
   List<Widget> shiftsWidgets = [];
   for (var i = 0; i < shifts.length; i++) {
     shiftsWidgets.add(Row(
+      spacing: 15,
       children: [
         ButtonTimeWidget(
-          text: shifts[i].start!.format(context),
+          text: shifts[i].start.format(context),
           update: () async {
             final newTime = await timePicker(
               context, initialTime: shifts[i].start
@@ -27,7 +30,7 @@ List<Widget> shiftsToWidgets(
           }
         ),
         ButtonTimeWidget(
-          text: shifts[i].end!.format(context),
+          text: shifts[i].end.format(context),
           update: () async {
             final newTime = await timePicker(
               context, initialTime: shifts[i].end
@@ -38,7 +41,7 @@ List<Widget> shiftsToWidgets(
           }
         ),
         ButtonTimeWidget(
-          text: minutesHourFormat(shifts[i].deltaMinutes!))
+          text: minutesHourFormat(shifts[i].deltaMinutes))
       ])
     );
   }
@@ -46,7 +49,7 @@ List<Widget> shiftsToWidgets(
   return shiftsWidgets;
 }
 
-Future<void> _showPopup(BuildContext context, List<ScheduleData> shifts) async {
+Future<void> _showPopup(BuildContext context, List<Shift> shifts) async {
   return showDialog(
     context: context,
     barrierDismissible: false,
@@ -59,19 +62,37 @@ Future<void> _showPopup(BuildContext context, List<ScheduleData> shifts) async {
             actions: [
               TextButton(
                 onPressed: () {
-                  for (var i = 0; i < shifts.length; i++) {
-                    final shift = shifts[i];
-                    print("$i: ${shift.start!.format(context)} "
-                      "- ${shift.end!.format(context)} "
-                      "(${minutesHourFormat(shift.deltaMinutes!)})}");
-                  }
                   Navigator.of(context).pop();
                 },
                 child: Text("Ok"),
               )
             ],
             content: SingleChildScrollView(
-              child: Column(children: shiftsWidgets)
+              child: Column(
+                children: [
+                  ...shiftsWidgets,
+                  TextButton(
+                    onPressed: () async {
+                      setState(() =>
+                        shifts.add(
+                          Shift(
+                            defaultTimeOfDay,
+                            defaultTimeOfDay,
+                            turn: shifts.length
+                          )));
+                    },
+                    child: Text("Add")
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      for (final shift in shifts) {
+                        insertShift(shift);
+                      }
+                    },
+                    child: Text("Save")
+                  ),
+                ],
+              )
             ),
           );
       }
@@ -87,10 +108,11 @@ class PopupWidget extends StatefulWidget {
 }
 
 class PopupState extends State<PopupWidget> {
-  List<ScheduleData> shifts = [
-    ScheduleData.fromTime(
-      TimeOfDay(hour: 8, minute: 0),
+  List<Shift> shifts = [
+    Shift(
+      TimeOfDay(hour: 8, minute: 0,),
       TimeOfDay(hour: 13, minute: 0),
+      turn: 1,
     )
   ];
 
@@ -105,7 +127,7 @@ class PopupState extends State<PopupWidget> {
     for (var i = 0; i < shifts.length; i++) {
       shiftsWidgets.add([
         ButtonTimeWidget(
-          text: shifts[i].start!.format(context),
+          text: shifts[i].start.format(context),
           update: () async {
             final newTime = await timePicker(
               context,
@@ -118,7 +140,7 @@ class PopupState extends State<PopupWidget> {
           }
         ),
         ButtonTimeWidget(
-          text: shifts[i].end!.format(context),
+          text: shifts[i].end.format(context),
           update: () async {
             final newTime = await timePicker(
               context,
@@ -130,7 +152,7 @@ class PopupState extends State<PopupWidget> {
           }
         ),
         ButtonTimeWidget(
-          text: minutesHourFormat(shifts[i].deltaMinutes!))
+          text: minutesHourFormat(shifts[i].deltaMinutes))
       ]);
     }
 

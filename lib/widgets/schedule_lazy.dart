@@ -13,7 +13,7 @@ class ScheduleLazyWidget extends StatefulWidget {
 }
 
 class ScheduleLazyState extends State<ScheduleLazyWidget> {
-  List<ScheduleData> schedules = [];
+  List<Shift> schedules = [];
 
   Widget schedulesWidget() {
       List<Widget> children = [];
@@ -52,7 +52,7 @@ class ScheduleLazyState extends State<ScheduleLazyWidget> {
       return Column(mainAxisAlignment: MainAxisAlignment.center, children: children);
   }
 
-  Widget buildLazy(BuildContext context, AsyncSnapshot<List<ScheduleData>> snapshot) {
+  Widget buildLazy(BuildContext context, AsyncSnapshot<List<Shift>> snapshot) {
     print("Running buildLazy: ${snapshot.connectionState}");
     if (snapshot.hasData) {
       schedules = snapshot.data!;
@@ -72,7 +72,7 @@ class ScheduleLazyState extends State<ScheduleLazyWidget> {
     }
 
     return FutureBuilder(
-      future: listScheduleByDate(DateTime(2026, 3, 30)),
+      future: listShifts(),
       builder: buildLazy,
       initialData: schedules,
     );
