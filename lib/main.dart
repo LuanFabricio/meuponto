@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:meuponto/widgets/popup.dart';
+import 'package:meuponto/widgets/popup_default_shifts.dart';
 
 import 'package:meuponto/widgets/schedule.dart';
 import 'package:meuponto/widgets/schedule_lazy.dart';
@@ -110,7 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             ScheduleWidget(),
             ScheduleLazyWidget(),
-            PopupWidget(),
+            PopupDefaultShiftsWidget(),
           ],
         ),
       ),

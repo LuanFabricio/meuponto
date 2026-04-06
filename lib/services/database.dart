@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-import 'package:meuponto/data/schedule.dart';
-
 const String tag = "Database";
+
+const String tableDefaultShifts = "default_shifts";
+const String tableCurrentShifts = "current_shifts";
 
 TimeOfDay dbStringToTimeOfDay(String format) {
   print("format: $format");
@@ -18,54 +19,19 @@ TimeOfDay dbStringToTimeOfDay(String format) {
   );
 }
 
-
 Future<Database> initializeDB() async {
   final _ = WidgetsFlutterBinding.ensureInitialized();
+  final dbFilename = "meu_ponto.db";
 
-  // await deleteDatabase(join(await getDatabasesPath(), "meu_ponto.db"));
+  // await deleteDatabase(join(await getDatabasesPath(), dbFilename));
   return openDatabase(
-    join(await getDatabasesPath(), "meu_ponto.db"),
-    onCreate: (db, version) {
-      return db.execute(
-        "CREATE TABLE shifts(turn int primary key, start time, end time, delta_minutes int);"
-        "CREATE TABLE schedules(schedule_date datetime, start time, end time, delta_minutes int)");
+    join(await getDatabasesPath(), dbFilename),
+    onCreate: (db, version) async {
+      await db.execute("CREATE TABLE $tableDefaultShifts(turn int primary key, start time, end time, delta_minutes int);");
+      await db.execute(
+        "CREATE TABLE $tableCurrentShifts(shift_date date, turn int, start time, end time, delta_minutes int,"
+        "primary key(shift_date, turn));");
     },
     version: 1,
   );
-}
-
-Future<int> insertSchedule(ScheduleData schedule) async {
-  final db = await initializeDB();
-
-  print("Schedule map: ${schedule.toMap()}");
-  return db.insert(
-    "schedules",
-    schedule.toMap(),
-    conflictAlgorithm: ConflictAlgorithm.replace,
-  );
-}
-
-Future<List<ScheduleData>> listScheduleByDate(DateTime date) async {
-  final db = await initializeDB();
-
-  List<ScheduleData> schedules = [];
-
-  final list = await db.query(
-    "schedules",
-    where: "schedule_date = ?",
-    whereArgs: [date.toString()]
-  );
-
-  for (final obj in list) {
-    print(obj.toString());
-    ScheduleData schedule = ScheduleData();
-
-    schedule.start = dbStringToTimeOfDay(obj["start"] as String);
-    schedule.end = dbStringToTimeOfDay(obj["end"] as String);
-    schedule.deltaMinutes = obj["delta_minutes"] as int;
-
-    schedules.add(schedule);
-  }
-
-  return schedules;
 }

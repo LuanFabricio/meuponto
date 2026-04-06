@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meuponto/data/schedule.dart';
 
 import 'package:meuponto/services/format.dart';
 import 'package:meuponto/services/time_utils.dart';
@@ -11,6 +12,7 @@ class Shift {
     print("Delta minutes: $deltaMinutes");
   }
 
+  final _date = DateTime.now();
   final int turn;
   TimeOfDay _start = TimeOfDay.now();
   TimeOfDay get start => _start;
@@ -30,6 +32,7 @@ class Shift {
   Map<String, Object?> toMap() {
     return {
       "turn": turn,
+      "shift_date": formatDate(_date),
       "start": formatTimeOfDay(start),
       "end": formatTimeOfDay(end),
       "delta_minutes": deltaMinutes,
@@ -39,6 +42,7 @@ class Shift {
   @override
   String toString() {
     return
+      "shift_date: ${_date.toString()} "
       "turn: $turn "
       "start: ${start.toString()} "
       "end: ${end.toString()} "

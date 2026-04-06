@@ -2,8 +2,8 @@ import 'dart:developer' as dev;
 
 import 'package:flutter/material.dart';
 
-import 'package:meuponto/data/schedule.dart';
-import 'package:meuponto/services/database.dart';
+import 'package:meuponto/data/shift.dart';
+import 'package:meuponto/services/shift.dart';
 import 'package:meuponto/services/time_picker.dart';
 import 'package:meuponto/services/format.dart';
 import 'package:meuponto/widgets/button_time.dart';
@@ -18,80 +18,63 @@ class ScheduleWidget extends StatefulWidget {
 }
 
 class ScheduleState extends State<ScheduleWidget> {
-  final List<ScheduleData> turns = [];
+  final List<Shift> turns = [];
 
   ScheduleState() : super() {
-    for (ScheduleData shift in baseShift){
-      final ScheduleData schedule = ScheduleData.fromSchedule(shift);
-      schedule.isComplete = false;
-      turns.add(schedule);
+    for (Shift shift in baseShift){
+      turns.add(shift);
     }
 
-    for (ScheduleData shift in baseShift){
-      dev.log(name: tag, "Shifts: ${shift.start}/${shift.end} (${shift.deltaMinutes}) - ${shift.isComplete}");
+    for (Shift shift in baseShift){
+      dev.log(name: tag, "Shifts: ${shift.start}/${shift.end} (${shift.deltaMinutes})");
     }
 
-    for (ScheduleData turn in turns){
-      dev.log(name: tag, "Shifts: ${turn.start}/${turn.end} (${turn.deltaMinutes}) - ${turn.isComplete}");
+    for (Shift turn in turns){
+      dev.log(name: tag, "Shifts: ${turn.start}/${turn.end} (${turn.deltaMinutes})");
     }
   }
 
-  final List<ScheduleData> baseShift = [
-    ScheduleData.fromTime(
+  final List<Shift> baseShift = [
+    Shift(
       TimeOfDay(hour: 8, minute: 0),
-      TimeOfDay(hour: 13, minute: 0)
+      TimeOfDay(hour: 13, minute: 0),
+      turn: 1,
     ),
-    ScheduleData.fromTime(
+    Shift(
       TimeOfDay(hour: 14, minute: 20),
-      TimeOfDay(hour: 18, minute: 8)
-    )
+      TimeOfDay(hour: 18, minute: 8),
+      turn: 1,
+    ),
   ];
-
-  void updateSchedule() {
-    setState(() {
-      int lastIndex = turns.length - 1;
-      if (turns.isEmpty || turns[lastIndex].isShiftFilled()) {
-        turns.add(ScheduleData());
-        lastIndex++;
-      }
-
-      turns[lastIndex].addTime();
-    });
-  }
 
   List<Widget> getPunches(int i) {
     List<Widget> widgets = [];
 
-    if (turns[i].start != null) {
-      widgets.add(
-        ButtonTimeWidget(
-          text: turns[i].start!.format(context),
-          update: () async {
-            final newTime = await timePicker(context, initialTime: turns[i].start);
-            if (newTime != null) {
-              setState(() => turns[i].start = newTime);
-            }
+    widgets.add(
+      ButtonTimeWidget(
+        text: turns[i].start.format(context),
+        update: () async {
+          final newTime = await timePicker(context, initialTime: turns[i].start);
+          if (newTime != null) {
+            setState(() => turns[i].start = newTime);
           }
-        ),
-      );
-    }
-    if (turns[i].end != null) {
-      widgets.add(
-        ButtonTimeWidget(
-          text: turns[i].end!.format(context),
-          update: () async {
-            final newTime = await timePicker(context, initialTime: turns[i].end);
-            if (newTime != null) {
-              setState(() => turns[i].end = newTime);
-            }
-          }
-        ),
-      );
-    }
+        }
+      ),
+    );
 
-    if (turns[i].deltaMinutes != null) {
-      widgets.add(ButtonTimeWidget(text: minutesHourFormat(turns[i].deltaMinutes!)));
-    }
+    widgets.add(
+      ButtonTimeWidget(
+        text: turns[i].end.format(context),
+        update: () async {
+          final newTime = await timePicker(context, initialTime: turns[i].end);
+          if (newTime != null) {
+            setState(() => turns[i].end = newTime);
+          }
+        }
+      ),
+    );
+
+    widgets.add(ButtonTimeWidget(text: minutesHourFormat(turns[i].deltaMinutes)));
 
     return widgets;
   }
@@ -114,8 +97,7 @@ class ScheduleState extends State<ScheduleWidget> {
 
   String getTotalDelta() {
     int totalDeltaMinutes = 0;
-    for (ScheduleData schedule in turns) {
-      if (schedule.deltaMinutes == null) continue;
+    for (final schedule in turns) {
       totalDeltaMinutes += schedule.deltaMinutes!;
     }
 
@@ -126,13 +108,15 @@ class ScheduleState extends State<ScheduleWidget> {
   }
 
   void save() async {
-    for (final schedule in turns) {
-      final _ = await insertSchedule(schedule);
+    print(await getCurrentShift(DateTime.now()));
+    for (var i = 0; i < turns.length; i++) {
+      final schedule = turns[i];
+      final _ = await insertCurrentShift(schedule);
     }
 
     final now = DateTime.now();
     final queryDate = DateTime(now.year, now.month, now.day);
-    List<ScheduleData> list = await listScheduleByDate(queryDate);
+    List<Shift> list = await getCurrentShift(queryDate);
 
     for (final item in list) {
       print("[${queryDate.toString()}]${item.start} -> ${item.end} (${item.deltaMinutes})");
@@ -146,7 +130,6 @@ class ScheduleState extends State<ScheduleWidget> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         SizedBox(height: 8),
-        ButtonTimeWidget(text: "Punch", update: updateSchedule),
         ...getTurns(),
         ButtonTimeWidget(text: getTotalDelta()),
         ButtonTimeWidget(

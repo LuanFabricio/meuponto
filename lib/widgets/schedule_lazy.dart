@@ -27,7 +27,6 @@ class ScheduleLazyState extends State<ScheduleLazyWidget> {
             children: [
               ButtonTimeWidget(
                 text: schedule.start.format(context),
-                // TODO: Check how to handle the update state
                 update: () async {
                   final newTime = await timePicker(context, initialTime: schedule.start);
                   if (newTime != null) {
@@ -75,7 +74,7 @@ class ScheduleLazyState extends State<ScheduleLazyWidget> {
     }
 
     return FutureBuilder(
-      future: listShifts(),
+      future: listDefaultShifts(),
       builder: buildLazy,
       initialData: shifts,
     );

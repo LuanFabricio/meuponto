@@ -53,12 +53,11 @@ List<Widget> shiftsToWidgets(
 }
 
 Future<void> _showPopup(BuildContext context) async {
-  // List<Shift> shifts = await listShifts();
   return showDialog(
     context: context,
     barrierDismissible: false,
     builder: (BuildContext context) {
-      return FutureBuilder(future: listShifts(),
+      return FutureBuilder(future: listDefaultShifts(),
         builder: (BuildContext context, AsyncSnapshot<List<Shift>> snapshot) {
         if (snapshot.hasError) {
           return Text("Error: ${snapshot.error}");
@@ -96,8 +95,7 @@ Future<void> _showPopup(BuildContext context) async {
                       TextButton(
                         onPressed: () async {
                           for (final shift in shifts) {
-                            print(shift.toString());
-                            insertShift(shift);
+                            upinsertDefaultShift(shift);
                           }
                         },
                         child: Text("Save")
@@ -115,14 +113,14 @@ Future<void> _showPopup(BuildContext context) async {
   });
 }
 
-class PopupWidget extends StatefulWidget {
-  const PopupWidget({super.key});
+class PopupDefaultShiftsWidget extends StatefulWidget {
+  const PopupDefaultShiftsWidget({super.key});
 
   @override
-  State<PopupWidget> createState() => PopupState();
+  State<PopupDefaultShiftsWidget> createState() => PopupDefaultShiftsState();
 }
 
-class PopupState extends State<PopupWidget> {
+class PopupDefaultShiftsState extends State<PopupDefaultShiftsWidget> {
   void showPopup() async {
     await _showPopup(context);
   }
