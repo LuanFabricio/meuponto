@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 import 'package:meuponto/data/shift.dart';
-import 'package:meuponto/services/database.dart';
+
 import 'package:meuponto/services/format.dart';
+import 'package:meuponto/services/shift.dart';
 import 'package:meuponto/services/time_picker.dart';
+
 import 'package:meuponto/widgets/button_time.dart';
 
 const TimeOfDay defaultTimeOfDay = TimeOfDay(hour: 0, minute: 0);

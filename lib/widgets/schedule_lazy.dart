@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 import 'package:meuponto/data/shift.dart';
-import 'package:meuponto/services/database.dart';
+
 import 'package:meuponto/services/format.dart';
+import 'package:meuponto/services/shift.dart';
 import 'package:meuponto/services/time_picker.dart';
+
 import 'package:meuponto/widgets/button_time.dart';
 
 class ScheduleLazyWidget extends StatefulWidget {
@@ -14,17 +16,17 @@ class ScheduleLazyWidget extends StatefulWidget {
 }
 
 class ScheduleLazyState extends State<ScheduleLazyWidget> {
-  List<Shift> schedules = [];
+  List<Shift> shifts = [];
 
   Widget schedulesWidget() {
       List<Widget> children = [];
-      for (final schedule in schedules) {
+      for (final schedule in shifts) {
         children.add(
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ButtonTimeWidget(
-                text: schedule.start!.format(context),
+                text: schedule.start.format(context),
                 // TODO: Check how to handle the update state
                 update: () async {
                   final newTime = await timePicker(context, initialTime: schedule.start);
@@ -34,7 +36,7 @@ class ScheduleLazyState extends State<ScheduleLazyWidget> {
                 },
               ),
               ButtonTimeWidget(
-                text: schedule.end!.format(context),
+                text: schedule.end.format(context),
                 update: () async {
                   final newTime = await timePicker(context, initialTime: schedule.end);
                   if (newTime != null) {
@@ -43,7 +45,7 @@ class ScheduleLazyState extends State<ScheduleLazyWidget> {
                 },
               ),
               ButtonTimeWidget(
-                text: minutesHourFormat(schedule.deltaMinutes!),
+                text: minutesHourFormat(schedule.deltaMinutes),
               )
             ]
           )
@@ -56,8 +58,8 @@ class ScheduleLazyState extends State<ScheduleLazyWidget> {
   Widget buildLazy(BuildContext context, AsyncSnapshot<List<Shift>> snapshot) {
     print("Running buildLazy: ${snapshot.connectionState}");
     if (snapshot.hasData) {
-      schedules = snapshot.data!;
-      if (schedules.isEmpty) return Text("No shifts");
+      shifts = snapshot.data!;
+      if (shifts.isEmpty) return Text("No shifts");
 
       return schedulesWidget();
     } else if (snapshot.hasError) {
@@ -68,14 +70,14 @@ class ScheduleLazyState extends State<ScheduleLazyWidget> {
 
   @override
   Widget build(BuildContext context) {
-    if (schedules.isNotEmpty) {
+    if (shifts.isNotEmpty) {
       return schedulesWidget();
     }
 
     return FutureBuilder(
       future: listShifts(),
       builder: buildLazy,
-      initialData: schedules,
+      initialData: shifts,
     );
   }
 }
