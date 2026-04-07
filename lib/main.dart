@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meuponto/services/format.dart';
 
 import 'package:meuponto/widgets/popup_default_shifts.dart';
 import 'package:meuponto/widgets/schedule_lazy.dart';
@@ -44,6 +45,11 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: .center,
           children: [
+            Text(
+              formatDateHuman(DateTime.now()),
+              style: TextStyle(fontSize: 32),
+            ),
+            SizedBox(height: 48),
             ScheduleLazyWidget(),
             // PopupDefaultShiftsWidget(),
           ],
