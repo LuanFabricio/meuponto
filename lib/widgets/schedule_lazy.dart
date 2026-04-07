@@ -20,36 +20,46 @@ class ScheduleLazyState extends State<ScheduleLazyWidget> {
 
   Widget schedulesWidget() {
       List<Widget> children = [];
-      for (final schedule in shifts) {
+      int totalDeltaMinutes = 0;
+      for (var i = 0; i < shifts.length; i++) {
+        print("Current shift: ${shifts[i].toString()}");
+        totalDeltaMinutes += shifts[i].deltaMinutes;
         children.add(
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ButtonTimeWidget(
-                text: schedule.start.format(context),
+                text: shifts[i].start.format(context),
                 update: () async {
-                  final newTime = await timePicker(context, initialTime: schedule.start);
+                  final newTime = await timePicker(context, initialTime: shifts[i].start);
                   if (newTime != null) {
-                    setState(() => schedule.start = newTime);
+                    setState(() {
+                      shifts[i].start = newTime;
+                    });
+                    await upinsertCurrentShift(shifts[i]);
                   }
                 },
               ),
               ButtonTimeWidget(
-                text: schedule.end.format(context),
+                text: shifts[i].end.format(context),
                 update: () async {
-                  final newTime = await timePicker(context, initialTime: schedule.end);
+                  final newTime = await timePicker(context, initialTime: shifts[i].end);
                   if (newTime != null) {
-                    setState(() => schedule.end = newTime);
+                    setState(() {
+                      shifts[i].end = newTime;
+                    });
+                    await upinsertCurrentShift(shifts[i]);
                   }
                 },
               ),
               ButtonTimeWidget(
-                text: minutesHourFormat(schedule.deltaMinutes),
+                text: minutesHourFormat(shifts[i].deltaMinutes),
               )
             ]
           )
         );
       }
+      children.add(ButtonTimeWidget(text: minutesHourFormat(totalDeltaMinutes)));
 
       return Column(mainAxisAlignment: MainAxisAlignment.center, children: children);
   }
@@ -60,6 +70,9 @@ class ScheduleLazyState extends State<ScheduleLazyWidget> {
       shifts = snapshot.data!;
       if (shifts.isEmpty) return Text("No shifts");
 
+      for (final shift in shifts) {
+        print(shift.toString());
+      }
       return schedulesWidget();
     } else if (snapshot.hasError) {
       return Text("Error ${snapshot.error}");
@@ -74,7 +87,7 @@ class ScheduleLazyState extends State<ScheduleLazyWidget> {
     }
 
     return FutureBuilder(
-      future: listDefaultShifts(),
+      future: getCurrentShift(DateTime.now()),
       builder: buildLazy,
       initialData: shifts,
     );
