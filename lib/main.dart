@@ -18,6 +18,7 @@ class MyApp extends StatelessWidget {
         colorScheme: .fromSeed(seedColor: Colors.deepPurple),
       ),
       home: const MyHomePage(title: "Meu Ponto"),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -44,12 +45,14 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: .center,
           children: [
             ScheduleLazyWidget(),
-            PopupDefaultShiftsWidget(),
+            // PopupDefaultShiftsWidget(),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () async {
+          await showPopup(context);
+        },
         tooltip: 'Settings',
         child: const Icon(Icons.settings),
       ),

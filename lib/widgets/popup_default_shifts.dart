@@ -52,7 +52,7 @@ List<Widget> shiftsToWidgets(
   return shiftsWidgets;
 }
 
-Future<void> _showPopup(BuildContext context) async {
+Future<void> showPopup(BuildContext context) async {
   return showDialog(
     context: context,
     barrierDismissible: false,
@@ -68,12 +68,16 @@ Future<void> _showPopup(BuildContext context) async {
               List<Widget> shiftsWidgets = shiftsToWidgets(shifts, context, setState);
               return AlertDialog(
                 title: const Text("Set your default shift."),
+                actionsAlignment: MainAxisAlignment.center,
                 actions: [
                   TextButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      for (final shift in shifts) {
+                        upinsertDefaultShift(shift);
+                      }
                       Navigator.of(context).pop();
                     },
-                    child: Text("Ok"),
+                    child: Text("Save"),
                   )
                 ],
                 content: SingleChildScrollView(
@@ -92,14 +96,14 @@ Future<void> _showPopup(BuildContext context) async {
                         },
                         child: Text("Add")
                       ),
-                      TextButton(
-                        onPressed: () async {
-                          for (final shift in shifts) {
-                            upinsertDefaultShift(shift);
-                          }
-                        },
-                        child: Text("Save")
-                      ),
+                      // TextButton(
+                      //   onPressed: () async {
+                      //     for (final shift in shifts) {
+                      //       upinsertDefaultShift(shift);
+                      //     }
+                      //   },
+                      //   child: Text("Save")
+                      // ),
                     ],
                   )
                 ),
@@ -121,12 +125,12 @@ class PopupDefaultShiftsWidget extends StatefulWidget {
 }
 
 class PopupDefaultShiftsState extends State<PopupDefaultShiftsWidget> {
-  void showPopup() async {
-    await _showPopup(context);
+  void _showPopup() async {
+    await showPopup(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    return TextButton.icon(onPressed: showPopup, label: const Text("Edit shifts"));
+    return TextButton.icon(onPressed: _showPopup, label: const Text("Edit shifts"));
   }
 }
