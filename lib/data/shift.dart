@@ -1,28 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:meuponto/data/schedule.dart';
 
 import 'package:meuponto/services/format.dart';
 import 'package:meuponto/services/time_utils.dart';
 
 class Shift {
-  Shift(TimeOfDay start, TimeOfDay end, {required this.turn}) {
+  Shift({
+    required TimeOfDay start,
+    required TimeOfDay end,
+    required this.turn,
+    DateTime? date,
+  }) {
+    _date = date ?? DateTime.now();
     _start = start;
     _end = end;
     deltaMinutes = getDeltaTime(start, end);
     print("Delta minutes: $deltaMinutes");
   }
 
-  final _date = DateTime.now();
+  late final DateTime _date;
   final int turn;
-  TimeOfDay _start = TimeOfDay.now();
+  late TimeOfDay _start;
   TimeOfDay get start => _start;
   set start(TimeOfDay time) {
     _start = time;
-    deltaMinutes = getDeltaTime(start, start);
+    deltaMinutes = getDeltaTime(start, end);
   }
 
   TimeOfDay get end => _end;
-  TimeOfDay _end = TimeOfDay.now();
+  late TimeOfDay _end;
   set end(TimeOfDay time) {
     _end = time;
     deltaMinutes = getDeltaTime(start, end);

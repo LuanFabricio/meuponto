@@ -85,8 +85,8 @@ Future<void> _showPopup(BuildContext context) async {
                           setState(() =>
                             shifts.add(
                               Shift(
-                                defaultTimeOfDay,
-                                defaultTimeOfDay,
+                                start: defaultTimeOfDay,
+                                end: defaultTimeOfDay,
                                 turn: shifts.length + 1,
                               )));
                         },

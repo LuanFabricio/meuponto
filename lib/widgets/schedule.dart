@@ -36,13 +36,13 @@ class ScheduleState extends State<ScheduleWidget> {
 
   final List<Shift> baseShift = [
     Shift(
-      TimeOfDay(hour: 8, minute: 0),
-      TimeOfDay(hour: 13, minute: 0),
+      start: TimeOfDay(hour: 8, minute: 0),
+      end: TimeOfDay(hour: 13, minute: 0),
       turn: 1,
     ),
     Shift(
-      TimeOfDay(hour: 14, minute: 20),
-      TimeOfDay(hour: 18, minute: 8),
+      start: TimeOfDay(hour: 14, minute: 20),
+      end: TimeOfDay(hour: 18, minute: 8),
       turn: 1,
     ),
   ];
@@ -111,7 +111,7 @@ class ScheduleState extends State<ScheduleWidget> {
     print(await getCurrentShift(DateTime.now()));
     for (var i = 0; i < turns.length; i++) {
       final schedule = turns[i];
-      final _ = await insertCurrentShift(schedule);
+      final _ = await upinsertCurrentShift(schedule);
     }
 
     final now = DateTime.now();
