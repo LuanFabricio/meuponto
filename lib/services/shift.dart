@@ -21,15 +21,16 @@ Future<List<Shift>> listDefaultShifts() async {
   final list = await db.query(tableDefaultShifts);
 
   print("list.length: ${list.length}");
+  print("list: $list");
 
   final shifts = <Shift>[];
-  for (var i = 0; i < list.length; i++) {
-      final shift = list[i];
+  for (final obj in list) {
+      print(obj);
       shifts.add(
         Shift(
-          dbStringToTimeOfDay(shift["start"] as String),
-          dbStringToTimeOfDay(shift["end"] as String),
-          turn: i+1,
+          start: dbStringToTimeOfDay(obj["start"] as String),
+          end: dbStringToTimeOfDay(obj["end"] as String),
+          turn: obj["turn"] as int,
         )
       );
   }
@@ -37,7 +38,7 @@ Future<List<Shift>> listDefaultShifts() async {
   return shifts;
 }
 
-Future<int> insertCurrentShift(Shift shift) async {
+Future<int> upinsertCurrentShift(Shift shift) async {
   final db = await initializeDB();
 
   return db.insert(
@@ -63,8 +64,8 @@ Future<List<Shift>> listScheduleByDate(DateTime date) async {
     print(obj.toString());
     schedules.add(
       Shift(
-        dbStringToTimeOfDay(obj["start"] as String),
-        dbStringToTimeOfDay(obj["end"] as String),
+        start: dbStringToTimeOfDay(obj["start"] as String),
+        end: dbStringToTimeOfDay(obj["end"] as String),
         turn: obj["turn"] as int));
   }
 
@@ -78,7 +79,7 @@ Future<List<Shift>> getCurrentShift(DateTime date) async {
 
   if (list.isEmpty) {
     for (final shift in await listDefaultShifts()) {
-      insertCurrentShift(shift);
+      upinsertCurrentShift(shift);
     }
     list = await listScheduleByDate(date);
   }
