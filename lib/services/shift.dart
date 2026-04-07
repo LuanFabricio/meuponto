@@ -86,3 +86,16 @@ Future<List<Shift>> getCurrentShift(DateTime date) async {
 
   return list;
 }
+
+Future<Map<DateTime, List<Shift>>> getLastWeekShifts() async {
+  Map<DateTime, List<Shift>> map = {
+    DateTime(2026, 04, 07,): <Shift>[],
+  };
+
+  for (final key in map.keys) {
+    map[key] = await getCurrentShift(key);
+  }
+  print(map);
+
+  return map;
+}
