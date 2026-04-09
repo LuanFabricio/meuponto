@@ -99,3 +99,13 @@ Future<Map<DateTime, List<Shift>>> getLastWeekShifts() async {
 
   return map;
 }
+
+Future<int> getDefaultShiftDeltaMinutes() async {
+  List<Shift> defaultShifts = await listDefaultShifts();
+
+  int totalDeltaMinutes = 0;
+  for (final shift in defaultShifts) {
+    totalDeltaMinutes += shift.deltaMinutes;
+  }
+  return totalDeltaMinutes;
+}
