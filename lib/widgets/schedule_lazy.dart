@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:meuponto/data/shift.dart';
 
 import 'package:meuponto/services/format.dart';
+import 'package:meuponto/services/schedule_lazy.dart';
 import 'package:meuponto/services/shift.dart';
 import 'package:meuponto/services/time_picker.dart';
 
@@ -17,6 +18,7 @@ class ScheduleLazyWidget extends StatefulWidget {
 
 class ScheduleLazyState extends State<ScheduleLazyWidget> {
   List<Shift> shifts = [];
+  int defaultDeltaMinutes = 0;
 
   Widget schedulesWidget() {
       List<Widget> children = [];
@@ -59,20 +61,29 @@ class ScheduleLazyState extends State<ScheduleLazyWidget> {
           )
         );
       }
-      children.add(ButtonTimeWidget(text: minutesHourFormat(totalDeltaMinutes)));
+
+      final remainingMinutes = defaultDeltaMinutes - totalDeltaMinutes;
+      children.add(
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          spacing: 10,
+          children: [
+            ButtonTimeWidget(text: minutesHourFormat(totalDeltaMinutes)),
+            ButtonTimeWidget(text: minutesHourFormat(remainingMinutes)),
+          ],
+        )
+      );
 
       return Column(mainAxisAlignment: MainAxisAlignment.center, children: children);
   }
 
-  Widget buildLazy(BuildContext context, AsyncSnapshot<List<Shift>> snapshot) {
+  Widget buildLazy(BuildContext context, AsyncSnapshot<Map<String, Object>> snapshot) {
     print("Running buildLazy: ${snapshot.connectionState}");
     if (snapshot.hasData) {
-      shifts = snapshot.data!;
-      if (shifts.isEmpty) return Text("No shifts");
+      shifts = snapshot.data!["shifts"] as List<Shift>;
+      defaultDeltaMinutes = snapshot.data!["defaultDeltaMinutes"] as int;
 
-      for (final shift in shifts) {
-        print(shift.toString());
-      }
+      if (shifts.isEmpty) return Text("No shifts");
       return schedulesWidget();
     } else if (snapshot.hasError) {
       return Text("Error ${snapshot.error}");
@@ -87,9 +98,9 @@ class ScheduleLazyState extends State<ScheduleLazyWidget> {
     }
 
     return FutureBuilder(
-      future: getCurrentShift(DateTime.now()),
+      future: getWidgetData(DateTime.now()),
       builder: buildLazy,
-      initialData: shifts,
+      initialData: {"shifts": <Shift>[], "defaultDeltaMinutes": 0},
     );
   }
 }
