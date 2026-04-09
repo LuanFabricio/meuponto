@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meuponto/services/format.dart';
+import 'package:meuponto/widgets/calendar.dart';
 
 import 'package:meuponto/widgets/popup_default_shifts.dart';
 import 'package:meuponto/widgets/schedule_lazy.dart';
@@ -51,7 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             SizedBox(height: 48),
             ScheduleLazyWidget(),
-            // PopupDefaultShiftsWidget(),
+            // CalendarWidget(),
           ],
         ),
       ),

@@ -1,19 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:meuponto/data/shift.dart';
+import 'package:meuponto/services/calendar.dart';
 import 'package:meuponto/services/format.dart';
-import 'package:meuponto/services/shift.dart';
 import 'package:meuponto/widgets/button_time.dart';
 
 class CalendarWidget extends StatelessWidget {
   const CalendarWidget({super.key});
 
-  Widget futureBuilder(BuildContext context, AsyncSnapshot<Map<DateTime, List<Shift>>> snapshot) {
+  Widget futureBuilder(BuildContext context, AsyncSnapshot<List<(DateTime, int, int)>> snapshot) {
     final children = <Widget>[];
 
     if (snapshot.hasData) {
-      print(snapshot.data!);
-      for (final key in snapshot.data!.keys) {
-        children.add(Text(formatDateHuman(key)));
+      for (final (date, totalMinutes, deltaMinutes) in snapshot.data!) {
+        children.add(
+          Column(
+            children: [
+              Text(formatDateHuman(date)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: EdgeInsetsGeometry.only(left: 10),
+                    child: ButtonTimeWidget(
+                      text: minutesHourFormat(totalMinutes),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsetsGeometry.only(left: 10),
+                    child: ButtonTimeWidget(
+                      text: minutesHourFormat(deltaMinutes, showSignal: true),
+                    ),
+                  ),
+                ]
+              ),
+            ],
+          )
+        );
       }
     } else if (snapshot.hasError) {
       children.add(Text("Erro: ${snapshot.error}"));
@@ -27,7 +48,7 @@ class CalendarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: getLastWeekShifts(),
+      future: getCalendarWidgetData(DateTime.now()),
       builder: futureBuilder,
     );
   }
