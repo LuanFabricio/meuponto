@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 
-String minutesHourFormat(int totalMinutes) {
+String minutesHourFormat(int totalMinutes, {bool showSignal = false}) {
   String format = "";
+  if (showSignal) {
+    format += (totalMinutes < 0) ? "-" : "+";
+  }
+  totalMinutes = totalMinutes.abs();
 
   int hour = (totalMinutes / 60).floor();
   int minutes = totalMinutes % 60;
 
-  if (totalMinutes < 0) {
-    format += "-";
-  }
-  format += hour.abs().toString().padLeft(2, "0");
+  format += hour.toString().padLeft(2, "0");
   format += ":";
   format += minutes.toString().padLeft(2, "0");
 

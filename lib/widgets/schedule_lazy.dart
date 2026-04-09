@@ -62,14 +62,14 @@ class ScheduleLazyState extends State<ScheduleLazyWidget> {
         );
       }
 
-      final remainingMinutes = defaultDeltaMinutes - totalDeltaMinutes;
+      final remainingMinutes = totalDeltaMinutes - defaultDeltaMinutes;
       children.add(
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           spacing: 10,
           children: [
             ButtonTimeWidget(text: minutesHourFormat(totalDeltaMinutes)),
-            ButtonTimeWidget(text: minutesHourFormat(remainingMinutes)),
+            ButtonTimeWidget(text: minutesHourFormat(remainingMinutes, showSignal: true)),
           ],
         )
       );
