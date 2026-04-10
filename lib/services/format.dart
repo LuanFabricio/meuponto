@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 String minutesHourFormat(int totalMinutes, {bool showSignal = false}) {
   String format = "";
-  if (showSignal) {
+  if (showSignal && totalMinutes != 0) {
     format += (totalMinutes < 0) ? "-" : "+";
   }
   totalMinutes = totalMinutes.abs();
