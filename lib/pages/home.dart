@@ -26,7 +26,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
         actions: [
           IconButton(
-            icon: const Icon(Icons.calendar_view_week),
+            icon: const Icon(Icons.calendar_month),
             onPressed: () {
               Navigator.push(
                 context,
@@ -59,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          await showPopup(context);
+          await showDefaultShiftsPopup(context);
         },
         tooltip: 'Settings',
         child: const Icon(Icons.settings),

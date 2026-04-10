@@ -52,7 +52,7 @@ List<Widget> shiftsToWidgets(
   return shiftsWidgets;
 }
 
-Future<void> showPopup(BuildContext context) async {
+Future<void> showDefaultShiftsPopup(BuildContext context) async {
   return showDialog(
     context: context,
     barrierDismissible: false,
@@ -126,7 +126,7 @@ class PopupDefaultShiftsWidget extends StatefulWidget {
 
 class PopupDefaultShiftsState extends State<PopupDefaultShiftsWidget> {
   void _showPopup() async {
-    await showPopup(context);
+    await showDefaultShiftsPopup(context);
   }
 
   @override
