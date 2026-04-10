@@ -42,18 +42,24 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: .center,
-          children: [
-            Text(
-              formatDateHuman(DateTime.now()),
-              style: TextStyle(fontSize: 32),
-            ),
-            SizedBox(height: 48),
-            ScheduleLazyWidget(),
-            // CalendarWidget(),
-          ],
+      body: RefreshIndicator(
+        onRefresh: () async {
+          setState(() { });
+        },
+        child:
+        Center(
+          child: Column(
+            mainAxisAlignment: .center,
+            children: [
+              Text(
+                formatDateHuman(DateTime.now()),
+                style: TextStyle(fontSize: 32),
+              ),
+              SizedBox(height: 48),
+              ScheduleLazyWidget(),
+              CalendarWidget(),
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
