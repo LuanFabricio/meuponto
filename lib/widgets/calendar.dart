@@ -3,32 +3,50 @@ import 'package:meuponto/services/calendar.dart';
 import 'package:meuponto/services/format.dart';
 import 'package:meuponto/widgets/button_time.dart';
 
+const double defaultSpacing = 10;
+
 class CalendarWidget extends StatelessWidget {
   const CalendarWidget({super.key});
 
-  Widget futureBuilder(BuildContext context, AsyncSnapshot<List<(DateTime, int, int)>> snapshot) {
+  Widget futureBuilder(BuildContext context, AsyncSnapshot<List<CalendarData>> snapshot) {
     final children = <Widget>[];
 
     if (snapshot.hasData) {
-      for (final (date, totalMinutes, deltaMinutes) in snapshot.data!) {
+      for (final (date, dateShifts, totalMinutes, deltaMinutes) in snapshot.data!) {
+        final shiftsWidgets = <Widget>[];
+        for (final shift in dateShifts) {
+          shiftsWidgets.add(
+            Row(
+              mainAxisAlignment: .center,
+              spacing: defaultSpacing,
+              children: [
+                ButtonTimeWidget(
+                  text: shift.start.format(context),
+                  update: () { },
+                ),
+                ButtonTimeWidget(
+                  text: shift.end.format(context),
+                  update: () { },
+                )
+              ]
+            )
+          );
+        }
+
         children.add(
           Column(
             children: [
               Text(formatDateHuman(date)),
+              ...shiftsWidgets,
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                spacing: defaultSpacing,
                 children: [
-                  Padding(
-                    padding: EdgeInsetsGeometry.only(left: 10),
-                    child: ButtonTimeWidget(
-                      text: minutesHourFormat(totalMinutes),
-                    ),
+                  ButtonTimeWidget(
+                    text: minutesHourFormat(totalMinutes),
                   ),
-                  Padding(
-                    padding: EdgeInsetsGeometry.only(left: 10),
-                    child: ButtonTimeWidget(
-                      text: minutesHourFormat(deltaMinutes, showSignal: true),
-                    ),
+                  ButtonTimeWidget(
+                    text: minutesHourFormat(deltaMinutes, showSignal: true),
                   ),
                 ]
               ),
@@ -42,7 +60,7 @@ class CalendarWidget extends StatelessWidget {
       children.add(Text("Loading..."));
     }
 
-    return Column(children: children,);
+    return ListView(children: children,);
   }
 
   @override
