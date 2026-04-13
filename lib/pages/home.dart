@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:meuponto/data/shift.dart';
 
 import 'package:meuponto/pages/calendar.dart';
 import 'package:meuponto/services/format.dart';
 import 'package:meuponto/widgets/popup_default_shifts.dart';
 import 'package:meuponto/widgets/schedule_lazy.dart';
+import 'package:meuponto/widgets/shift.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -53,6 +55,15 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               SizedBox(height: _paddingHeight),
               ScheduleLazyWidget(),
+              SizedBox(height: _paddingHeight),
+              ShiftWidget(
+                shift: Shift(
+                  start: TimeOfDay(hour: 8, minute: 0),
+                  end: TimeOfDay(hour: 13, minute: 0),
+                  turn: 1,
+                ),
+                defaultDeltaMinutes: 3800,
+              )
               // CalendarWidget(),
             ],
         ),
