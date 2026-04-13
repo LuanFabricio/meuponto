@@ -83,7 +83,7 @@ class ScheduleLazyState extends State<ScheduleLazyWidget> {
       shifts = snapshot.data!["shifts"] as List<Shift>;
       defaultDeltaMinutes = snapshot.data!["defaultDeltaMinutes"] as int;
 
-      if (shifts.isEmpty) return Text("No shifts");
+      if (shifts.isEmpty) return Center(child: Text("No shifts"));
       return schedulesWidget();
     } else if (snapshot.hasError) {
       return Text("Error ${snapshot.error}");
