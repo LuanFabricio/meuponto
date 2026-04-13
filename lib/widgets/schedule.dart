@@ -74,7 +74,7 @@ class ScheduleState extends State<ScheduleWidget> {
       ),
     );
 
-    widgets.add(ButtonTimeWidget(text: minutesHourFormat(turns[i].deltaMinutes)));
+    widgets.add(ButtonTimeWidget(text: formatMinutesToHour(turns[i].deltaMinutes)));
 
     return widgets;
   }
@@ -104,7 +104,7 @@ class ScheduleState extends State<ScheduleWidget> {
     dev.log(name: tag, "Turns: ${turns.length}");
     dev.log(name: tag, "totalDelta: $totalDeltaMinutes");
 
-    return minutesHourFormat(totalDeltaMinutes);
+    return formatMinutesToHour(totalDeltaMinutes);
   }
 
   void save() async {

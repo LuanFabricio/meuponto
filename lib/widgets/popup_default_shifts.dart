@@ -44,7 +44,7 @@ List<Widget> shiftsToWidgets(
           }
         ),
         ButtonTimeWidget(
-          text: minutesHourFormat(shifts[i].deltaMinutes))
+          text: formatMinutesToHour(shifts[i].deltaMinutes))
       ])
     );
   }

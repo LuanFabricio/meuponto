@@ -43,10 +43,10 @@ class CalendarWidget extends StatelessWidget {
                 spacing: defaultSpacing,
                 children: [
                   ButtonTimeWidget(
-                    text: minutesHourFormat(totalMinutes),
+                    text: formatMinutesToHour(totalMinutes),
                   ),
                   ButtonTimeWidget(
-                    text: minutesHourFormat(deltaMinutes, showSignal: true),
+                    text: formatMinutesToHour(deltaMinutes, showSignal: true),
                   ),
                 ]
               ),

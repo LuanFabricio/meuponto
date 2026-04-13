@@ -55,7 +55,7 @@ class ScheduleLazyState extends State<ScheduleLazyWidget> {
                 },
               ),
               ButtonTimeWidget(
-                text: minutesHourFormat(shifts[i].deltaMinutes),
+                text: formatMinutesToHour(shifts[i].deltaMinutes),
               )
             ]
           )
@@ -68,8 +68,8 @@ class ScheduleLazyState extends State<ScheduleLazyWidget> {
           mainAxisAlignment: MainAxisAlignment.center,
           spacing: 10,
           children: [
-            ButtonTimeWidget(text: minutesHourFormat(totalDeltaMinutes)),
-            ButtonTimeWidget(text: minutesHourFormat(remainingMinutes, showSignal: true)),
+            ButtonTimeWidget(text: formatMinutesToHour(totalDeltaMinutes)),
+            ButtonTimeWidget(text: formatMinutesToHour(remainingMinutes, showSignal: true)),
           ],
         )
       );
