@@ -92,7 +92,10 @@ Future<Map<DateTime, List<Shift>>> getLastWeekShifts(DateTime date) async {
   Map<DateTime, List<Shift>> map = {};
   for (var i = 0; i < 7; i++) {
     final currentDate = date.add(Duration(days: -i));
-    map[currentDate] = await getCurrentShift(currentDate);
+    final currentShift = await getCurrentShift(currentDate);
+
+    if (currentShift.isEmpty) continue;
+    map[currentDate] = currentShift;
   }
 
   return map;
