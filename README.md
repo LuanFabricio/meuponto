@@ -5,7 +5,7 @@ Um aplicativo simples para gerenciamento de ponto do trabalhador.
 ## Features
 - Adicionar turnos padrão do expediente de trabalho.
 - Gerenciar horario de entrada e saída do dia.
-- Ver turnos dos últimos dias
+- Ver turnos nos últimos 7 dias
 
 ## Prints
 ![home](https://github.com/LuanFabricio/meuponto/blob/main/images/home.jpeg?raw=true =360x800)
