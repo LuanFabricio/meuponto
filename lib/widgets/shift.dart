@@ -1,79 +1,47 @@
 import 'package:flutter/material.dart';
 
 import 'package:meuponto/data/shift.dart';
-import 'package:meuponto/services/format.dart';
-import 'package:meuponto/services/shift.dart';
-import 'package:meuponto/services/time_picker.dart';
 import 'package:meuponto/widgets/button_time.dart';
-
+/*
 class ShiftWidget extends StatefulWidget {
   final Shift shift;
-  final int defaultDeltaMinutes;
-  const ShiftWidget({super.key, required this.shift, required this.defaultDeltaMinutes});
+  const ShiftWidget({super.key, required this.shift});
 
   @override
   State<StatefulWidget> createState() => _ShiftState();
 }
+*/
 
-class _ShiftState extends State<ShiftWidget> {
-  List<Widget> getShiftTime() {
+class ShiftWidget extends StatelessWidget {
+  const ShiftWidget({
+    super.key,
+    required this.shift,
+    required this.onUpdateStart,
+    required this.onUpdateEnd,
+  });
+
+  final Shift shift;
+  final Function() onUpdateStart;
+  final Function() onUpdateEnd;
+
+  List<Widget> getShiftTime(BuildContext context) {
     return [
       ButtonTimeWidget(
-        text: widget.shift.start.format(context),
-        update: () async {
-          final newTime = await timePicker(
-            context,
-            initialTime: widget.shift.start,
-          );
-          if (newTime != null) {
-            widget.shift.start = newTime;
-            await upinsertCurrentShift(widget.shift);
-            setState(() { });
-          }
-        },
+        text: shift.start.format(context),
+        update: onUpdateStart,
       ),
       ButtonTimeWidget(
-        text: widget.shift.end.format(context),
-        update: () async {
-          final newTime = await timePicker(
-            context,
-            initialTime: widget.shift.end,
-          );
-          if (newTime != null) {
-            widget.shift.end = newTime;
-            await upinsertCurrentShift(widget.shift);
-            setState(() { });
-          }
-        },
-      ),
-    ];
-  }
-
-  List<Widget> getSpendTime() {
-    return [
-      ButtonTimeWidget(
-        text: formatMinutesToHour(widget.shift.deltaMinutes),
-      ),
-      ButtonTimeWidget(
-        text: formatMinutesToHour(widget.shift.deltaMinutes - widget.defaultDeltaMinutes),
+        text: shift.end.format(context),
+        update: onUpdateEnd,
       ),
     ];
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      spacing: 2.5,
-      children: [
-        Row(
-          spacing: 10,
-          children: getShiftTime(),
-        ),
-        Row(
-          spacing: 10,
-          children: getSpendTime(),
-        )
-      ],
+    return Row(
+      spacing: 10,
+      children: getShiftTime(context),
     );
   }
 }

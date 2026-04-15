@@ -20,12 +20,8 @@ Future<List<Shift>> listDefaultShifts() async {
   final db = await initializeDB();
   final list = await db.query(tableDefaultShifts);
 
-  print("list.length: ${list.length}");
-  print("list: $list");
-
   final shifts = <Shift>[];
   for (final obj in list) {
-      print(obj);
       shifts.add(
         Shift(
           start: dbStringToTimeOfDay(obj["start"] as String),
@@ -61,7 +57,6 @@ Future<List<Shift>> listScheduleByDate(DateTime date) async {
   );
 
   for (final obj in list) {
-    print(obj.toString());
     schedules.add(
       Shift(
         start: dbStringToTimeOfDay(obj["start"] as String),
@@ -72,12 +67,13 @@ Future<List<Shift>> listScheduleByDate(DateTime date) async {
   return schedules;
 }
 
-Future<List<Shift>> getCurrentShift(DateTime date) async {
+// TODO: Rename
+Future<List<Shift>> getCurrentShift(DateTime date, {bool insert = true}) async {
   date = DateTime(date.year, date.month, date.day);
 
   List<Shift> list = await listScheduleByDate(date);
 
-  if (list.isEmpty) {
+  if (list.isEmpty && insert) {
     for (final shift in await listDefaultShifts()) {
       upinsertCurrentShift(shift);
     }
@@ -92,7 +88,7 @@ Future<Map<DateTime, List<Shift>>> getLastWeekShifts(DateTime date) async {
   Map<DateTime, List<Shift>> map = {};
   for (var i = 0; i < 7; i++) {
     final currentDate = date.add(Duration(days: -i));
-    final currentShift = await getCurrentShift(currentDate);
+    final currentShift = await getCurrentShift(currentDate, insert: false);
 
     if (currentShift.isEmpty) continue;
     map[currentDate] = currentShift;

@@ -2,17 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:meuponto/services/calendar.dart';
 import 'package:meuponto/services/format.dart';
 import 'package:meuponto/widgets/button_time.dart';
+import 'package:meuponto/widgets/shift.dart';
 
 const double defaultSpacing = 10;
 
-class CalendarWidget extends StatelessWidget {
+class CalendarWidget extends StatefulWidget {
   const CalendarWidget({super.key});
+
+  @override
+  State<StatefulWidget> createState() => _CalendarState();
+}
+
+class _CalendarState extends State<CalendarWidget> {
+  List<CalendarData> shifts = [];
 
   Widget futureBuilder(BuildContext context, AsyncSnapshot<List<CalendarData>> snapshot) {
     final children = <Widget>[];
 
     if (snapshot.hasData) {
-      for (final (date, dateShifts, totalMinutes, deltaMinutes) in snapshot.data!) {
+      shifts = snapshot.data!;
+      for (final (date, dateShifts, totalMinutes, deltaMinutes) in shifts) {
         final shiftsWidgets = <Widget>[];
         for (final shift in dateShifts) {
           shiftsWidgets.add(
@@ -20,15 +29,12 @@ class CalendarWidget extends StatelessWidget {
               mainAxisAlignment: .center,
               spacing: defaultSpacing,
               children: [
-                ButtonTimeWidget(
-                  text: shift.start.format(context),
-                  update: () { },
-                ),
-                ButtonTimeWidget(
-                  text: shift.end.format(context),
-                  update: () { },
+                ShiftWidget(
+                  shift: shift,
+                  onUpdateStart: (){},
+                  onUpdateEnd: (){}
                 )
-              ]
+              ],
             )
           );
         }
